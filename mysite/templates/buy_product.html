@@ -1,0 +1,19 @@
+{% extends 'home.html' %}
+
+
+{% block content %}
+
+<div style="background-color: #dc3545; color: white;">
+    <h1> Please Try Again!</h1>
+    <div> Oops, something went wrong...</div>
+
+    {% for field in form %}
+    <h1> {{ field.errors }} </h1>
+    <h1> {{ form.non_field_errors }} </h1>
+    {% endfor %}
+
+</div>
+
+<p><a href="{% url 'home' %}">Home</a></p>
+
+{% endblock content %}
