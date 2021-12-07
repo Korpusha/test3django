@@ -12,7 +12,12 @@ from django.db.models import F, Q
 
 class HomePage(TemplateView):
     template_name = 'home.html'
-    extra_context = {'create_form': BuyForm, 'return_form': ReturnForm, 'goods': Goods.objects.all()}
+    extra_context = {'create_form': BuyForm, 'return_form': ReturnForm}
+
+    def get_context_data(self, **kwargs):
+        context = super(HomePage, self).get_context_data(**kwargs)
+        context['goods'] = Goods.objects.all()
+        return context
 
 
 class MyLogin(LoginView):
