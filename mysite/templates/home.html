@@ -25,6 +25,11 @@
      background-color: #dc3545;
     }
 
+    .message{
+     background-color: green;
+     color: white;
+    }
+
     .nav{
       overflow: hidden;
       background-color: #333;
@@ -74,7 +79,6 @@
 
 </head>
 <body>
-
 <div id="wrapper">
 
     <!--    Welcome Screen     -->
@@ -93,9 +97,20 @@
         {% else %}
         <a href="{% url 'logout' %}">Logout</a>
         <a href="">Purse: {{ request.user.purse }}</a>
+        <a href="{% url 'cart_product' %}"> Cart </a>
         {% endif %}
 
     </div>
+
+    {% if messages %}
+        <ul class="message">
+            {% for message in messages %}
+                <li>
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
     <!--    Admin Nav Bar    -->
     {% if request.user.is_superuser %}
@@ -104,14 +119,14 @@
         <button type="submit" class="btn btn-danger"> Append Goods</button>
     </form>
 
-    <form method="get" action="/return-page/" style="padding: 10px; text-align: center;">
+    <form method="get" action="{% url 'return_page' %}" style="padding: 10px; text-align: center;">
         <button type="submit" class="btn btn-danger"> Check Returns</button>
     </form>
-
     {% endif %}
-    {{ return_query }}
+
+    {% load update_var %}
     <!--    Goods     -->
-    {% for good in goods %}
+    {% for good in page_obj %}
     <div class="container">
         <div class="column">
             <h2>{{ good.name }}</h2>
@@ -127,11 +142,6 @@
             </form>
             {% endif %}
 
-            <form action="{% url 'return_product' %}" method="post" class="buttons"> {% csrf_token %}
-                <input type="hidden" name="good_id" value="{{ good.id }}">
-                <input type="submit" class="btn btn-danger" value="Return">
-            </form>
-
             <form action="{% url 'buy_product' %}" method="post" class="buttons"> {% csrf_token %}
                 {{ create_form }}
                 <input type="hidden" name="good_id" value="{{good.id}}">
@@ -144,11 +154,35 @@
     </div>
     {% endfor %}
 
-    <!--    Buy Product Errors    -->
-    {% block content %}
-    {% endblock %}
-
 </div>
+
+{% if is_paginated %}
+
+<ul class="pagination">
+
+    {% if page_obj.has_previous %}
+    <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+    <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+
+    {% for i in paginator.page_range %}
+    {% if page_obj.number == i %}
+    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+    {% else %}
+    <li><a href="?page={{ i }}">{{ i }}</a></li>
+    {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+    <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+
+</ul>
+{% endif %}
+
 <!--    Footer     -->
 <footer class="nav" style="float:left;">
     <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"> Korpusha&copy;</a>

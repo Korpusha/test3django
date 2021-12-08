@@ -1,0 +1,10 @@
+{% extends 'errors_base.html' %}
+
+{% block content %}
+
+{% for field in form %}
+<h1> {{ field.errors }}</h1>
+{% endfor %}
+<h1> {{ form.non_field_errors }}</h1>
+
+{% endblock content %}
