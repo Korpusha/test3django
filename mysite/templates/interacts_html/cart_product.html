@@ -1,0 +1,50 @@
+{% extends 'base_interact.html' %}
+
+{% block content %}
+
+<h1 style="text-align: center; color: white; background-color: #dc3545;"> Cart </h1>
+{% for product in page_obj %}
+<h2> Product: {{ product.good }}</h2>
+<div style="color: grey;">
+    <h3> Amount: {{ product.amount }} </h3>
+    {{ product.interact_date }}
+</div>
+
+<form action="{% url 'return_' %}" method="post"> {% csrf_token %}
+    {{ return_form }}
+    <input type="submit" value="Return" class="btn btn-success">
+    <input type="hidden" name="return_id" value="{{ product.id }}">
+</form>
+
+<hr>
+{% endfor %}
+
+
+{% if is_paginated %}
+
+<ul class="pagination">
+
+    {% if page_obj.has_previous %}
+    <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+    <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+
+    {% for i in paginator.page_range %}
+    {% if page_obj.number == i %}
+    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+    {% else %}
+    <li><a href="?page={{ i }}">{{ i }}</a></li>
+    {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+    <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+
+</ul>
+{% endif %}
+
+{% endblock content %}
