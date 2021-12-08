@@ -9,7 +9,7 @@ from .models import Goods, Customer, ReturnModel, BuyModel
 from datetime import datetime, timedelta, timezone
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.db.models import F, Q
+from django.db.models import F
 from django.contrib import messages
 
 
@@ -49,7 +49,7 @@ class MyRegister(SuccessMessageMixin, CreateView):
     success_message = "User has been created successfully."
 
 
-class MyLogOut(SuccessMessageMixin, LogoutView):
+class MyLogOut(LogoutView):
     next_page = reverse_lazy('home')
 
     def dispatch(self, request, *args, **kwargs):
@@ -105,7 +105,7 @@ class BuyProduct(SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class ReturnProduct(SuccessMessageMixin, CreateView):
+class ReturnProduct(CreateView):
     template_name = 'return_html/return_product.html'
     success_url = reverse_lazy('home')
     form_class = ReturnForm
@@ -113,8 +113,8 @@ class ReturnProduct(SuccessMessageMixin, CreateView):
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.user = self.request.user
-        purchase = BuyModel.objects.filter(Q(id=self.request.POST.get('return_id')) & Q(
-            interact_date__gte=(datetime.now(timezone.utc) - timedelta(minutes=3)).astimezone()))
+        purchase = BuyModel.objects.filter(id=self.request.POST.get('return_id'), interact_date__gte=(
+                    datetime.now(timezone.utc) - timedelta(minutes=3)).astimezone())
         if not purchase:
             form.add_error(None, 'Time to return this product has gone!')
             return super().form_invalid(form)
