@@ -1,0 +1,27 @@
+{% extends 'base_interact.html' %}
+
+{% block content %}
+
+
+<h1> Return </h1>
+{% for i in all_returns %}
+<div>
+
+    <div> {{ i }}</div>
+
+    <form action="{% url 'return_del' pk=i.pk %}" method="post"> {% csrf_token %}
+        <input type="submit" value="Accept" class="btn btn-success">
+        <input type="hidden" value="{{ i.id }}" name="return_id">
+    </form>
+
+    <form action="{% url 'return_del' pk=i.pk %}" method="post"> {% csrf_token %}
+        <input type="submit" value="Deny" class="btn btn-danger">
+    </form>
+
+
+</div>
+
+<hr>
+{% endfor %}
+
+{% endblock content %}
